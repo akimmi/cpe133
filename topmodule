@@ -1,0 +1,68 @@
+`timescale 1ns / 1ps
+
+module ConversionGameTop(
+    input [15:0] A,
+    input logic button,
+    input CLK,
+
+    output [7:0] CATHODES,
+    output [3:0] ANODES,
+    output less,
+    output equal,
+    output greater
+    );
+    int Values[20:0];
+    logic [15:0] B;
+    logic [15:0] sseg;
+    
+    SevSegDisp SSG_DISP (.DATA_IN(sseg), .CLK(CLK), .MODE(1'b1),
+                       .CATHODES(CATHODES), .ANODES(ANODES));
+     comparator comp(
+                .A (A), 
+                .B (B), 
+                .less(less), 
+                .equal(equal), 
+                .greater(greater)
+             );
+   //Definition of Outputted Decimal Values.   
+   initial 
+   begin
+   Values [0] = 2;
+   Values [2] = 13;
+   Values [4] = 25;
+   Values [6] = 42;
+   Values [8] = 64;
+   Values [10] = 88;
+   Values [12] = 100;
+   Values [14] = 127;
+   Values [16] = 179;
+   Values [18] = 234;
+   Values [20] = 256;
+   end
+   //Instantiation of the SSD. Feeds SSD the value in array Value depending on i. i will increment based on a for loop.
+//   initial
+    logic [15:0] temp;
+    int inc = 0;
+    logic sclk;
+    
+    clk_div MYCLKDIV(.clk(CLK), .sclk(sclk));
+    
+initial
+begin
+
+inc = 0;
+end
+always_ff @(posedge sclk)
+   begin
+        begin
+        sseg = Values[inc];
+        B = Values[inc];
+        if(button && equal)
+        begin
+        if(inc >= 20) inc = 0;
+        else inc = inc + 1;
+        end
+
+        end   
+  end   
+endmodule
